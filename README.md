@@ -14,7 +14,7 @@ Working:
 To be implemented:
 - WhatsApp - webhook endpoint exists, processing not yet implemented
 - SMS - webhook endpoint exists, processing not yet implemented
-- Any other channel depending on clients user demand
+- Any other channel depending on clients user demand 
 
 The webhook endpoint accepts requests for all three channels at /api/webhook/{channel} where channel is a variable that stores the type of channell: telegram, whatsapp, or simulator. Currently only Telegram messages are fully processed.
 

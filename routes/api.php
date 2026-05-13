@@ -4,5 +4,6 @@ use App\Http\Controllers\WebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/webhook/{channel}', [WebhookController::class, 'handle'])
-    ->whereIn('channel', ['telegram', 'simulator', 'whatsapp']);
+Route::post('/webhook/{channel}/{secret?}', [WebhookController::class, 'handle'])
+    ->whereIn('channel', ['telegram', 'simulator', 'whatsapp'])
+    ->middleware('throttle:60,1');

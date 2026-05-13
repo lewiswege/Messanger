@@ -84,7 +84,10 @@ DB_PASSWORD=your_password
 ```
 TELEGRAM_BOT_TOKEN=your_telegram_bot_token
 TELEGRAM_BOT_NAME=your_bot_name
+TELEGRAM_WEBHOOK_SECRET=your_random_32_char_secret
 ```
+
+> **Security Note:** You must generate a random string for `TELEGRAM_WEBHOOK_SECRET`. This acts as a private key between your app and Telegram to prevent spam. You can generate one using: `php -r "echo bin2hex(random_bytes(16));"`
 
 ### WebSocket Settings (Reverb)
 

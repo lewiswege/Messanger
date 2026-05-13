@@ -3,18 +3,20 @@
 This file explains how to set up and run this Laravel project on a new machine.
 
 
-## Supported Channels
+## Projecy specifications and Supported Channels
 
-This is a multi-channel conversation management system. Here is the current status of each channel:
+A Real time multi-channel conversation management system, for handling clients over social media. When messages come in they are processed immediately with live UI updates (No page refresh required), this makes the app less manual and giving it streamlined workflow and modern user experience The current status of channels are as follows:
 
 Working:
 - Telegram - fully implemented, can send and receive messages
+- Implemented as the main channels will be updated on demand
 
 To be implemented:
 - WhatsApp - webhook endpoint exists, processing not yet implemented
 - SMS - webhook endpoint exists, processing not yet implemented
+- Any other channel depending on clients user demand
 
-The webhook endpoint accepts requests for all three channels at /api/webhook/{channel} where channel is telegram, whatsapp, or simulator. Currently only Telegram messages are processed.
+The webhook endpoint accepts requests for all three channels at /api/webhook/{channel} where channel is a variable that stores the type of channell: telegram, whatsapp, or simulator. Currently only Telegram messages are fully processed.
 
 ## Requirements
 
@@ -26,9 +28,9 @@ The webhook endpoint accepts requests for all three channels at /api/webhook/{ch
 - ngrok (for Telegram webhooks)
 
 
-## Step 1: Clone and Install Dependencies
+## Step 1: Git Clone then Install Dependencies
 
-Clone the repository and navigate to the project folder:
+Clone the repository for https cloning you will to copy your  PAT inside the "git clone" url and navigate to the project folder:
 
 ```
 git clone <repository-url>
@@ -41,7 +43,7 @@ Install PHP dependencies:
 composer install
 ```
 
-If Laravel asks "Would you like to run the database migrations?" select No. You need to configure the database first in the next steps.
+If Laravel asks for user's input to run the database migrations during intallation select No. You need to configure the database first in the next steps.
 
 Install JavaScript dependencies:
 
@@ -58,7 +60,7 @@ Copy the example environment file:
 cp .env.example .env
 ```
 
-Generate the application key:
+Generate the application's key:
 
 ```
 php artisan key:generate
@@ -104,7 +106,7 @@ VITE_REVERB_SCHEME=http
 ### Application URL
 
 ```
-APP_URL=http://localhost:8001 use the 8001 port since I was facing unexplained issues on local host using 8001 port
+APP_URL=http://localhost:8001 use the 8001 port since I was facing unexplained issues on local host using 8000 port
 
 Run php artisan serve --port=8001
 ```
@@ -164,14 +166,14 @@ Terminal 1 - Web Server (use port 8001):
 php artisan serve --port=8001
 ```
 
-Terminal 2 - Queue Worker:
+Terminal 2 - Queue Worker:For processing incoming webhooks. currently I have defined two custom queues: 1. webhook, 2. notifications
 ```
-php artisan queue:work --queue=webhook,notificationns,default   
+php artisan queue:work --queue=webhook,notifications,default   
 ```
 
 Terminal 3 - WebSocket Server:
 ```
-php artisan reverb:start --debug for a detailes output
+php artisan reverb:start --debug for a detailed output
 ```
 
 Terminal 4 - Vite (for development):
@@ -182,7 +184,7 @@ npm run dev
 
 ## Step 6: Telegram Bot Setup
 
-You need to create your own Telegram bot to receive messages.
+You will need to create your own Telegram bot to be able to send and receive messages.
 
 ### Create a Bot with BotFather
 
@@ -193,7 +195,7 @@ You need to create your own Telegram bot to receive messages.
 5. BotFather asks for a username - must end in "bot" (example: my_support_bot)
 6. BotFather gives you a token that looks like this: 7894561230:AAHxYz123abc456DEF789ghi
 
-Copy that token and add it to your .env file:
+Copy the token provided and add it to your .env file in the telegram secion:
 ```
 TELEGRAM_BOT_TOKEN=7894561230:AAHxYz123abc456DEF789ghi
 TELEGRAM_BOT_NAME=my_support_bot
@@ -213,7 +215,7 @@ Forwarding   https://a1b2c3d4.ngrok.io -> http://localhost:8001
 
 Copy the https URL (example: https://a1b2c3d4.ngrok.io)
 
-### Register the Webhook
+### Register the ngrok url with telegram to direct telegram traffic to the application
 
 Run this curl command. Replace YOUR_BOT_TOKEN with your actual token and YOUR_NGROK_URL with your ngrok URL:
 
@@ -230,18 +232,18 @@ curl -X POST "https://api.telegram.org/bot7894561230:AAHxYz123abc456DEF789ghi/se
   -d '{"url": "https://a1b2c3d4.ngrok.io/api/webhook/telegram"}'
 ```
 
-Success response:
+If everything is done coorrectly this Success response should shows on the terminal:
 ```
 {"ok":true,"result":true,"description":"Webhook was set"}
 ```
 
-### Verify Webhook is Set
+### Now verify Webhook is Set
 
 ```
 curl "https://api.telegram.org/botYOUR_BOT_TOKEN/getWebhookInfo"
 ```
 
-### Test It
+### Test It with real input
 
 1. Open Telegram and search for your bot username
 2. Send a message to your bot
@@ -267,7 +269,7 @@ Login with:
 
 ## Testing with Postman
 
-You can test the webhook without Telegram by sending POST requests to:
+You can also test the webhook without Telegram by sending a POST request to:
 
 ```
 POST http://localhost:8001/api/webhook/telegram
@@ -309,11 +311,11 @@ Status code: 202
 
 ## Notes for Testing
 
-- Change from.id and chat.id to create different customers
+- Change from.id and chat.id to create a new customer
 - Use the same from.id to add messages to an existing conversation
 - Increment message_id for each request
 - Make sure the queue worker is running to process webhooks
-- Check the admin panel to see the messages appear
+- Check the admin panel to see the messages appear in real time
 
 
 ## Creating Additional Admin Users
